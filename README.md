@@ -1,2 +1,1 @@
-# Golang-web-api
-Golang | Make Any Shell Command as a Web API
+Golang Make Any Shell Command as a Web API
