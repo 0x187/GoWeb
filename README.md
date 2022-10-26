@@ -5,10 +5,10 @@ Clients invoke the web API by sending HTTP GET and POST requests. Clients can al
 
 ## Running 
 
-As an example, assume you need to expose the "date" command as a web API. You can simply run the tool as follows:
+As an example, assume you need to expose the "timedatectl" command as a web API. You can simply run the tool as follows:
 
 ```bash
-./GoWeb -p 8080 -b "curl -L google.com"
+./GoWeb -p 8080 -b "timedatectl"
 ```
 Now, the clients can invoke the API by sending an HTTP request to http://0.0.0.0:8080
 
