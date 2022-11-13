@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -12,12 +12,12 @@ import (
 )
 
 func main() {
-	binary := flag.String("b", "", "Path to the executable binary")
-	port := flag.Int("p", 63011, "HTTP port to listen on")
+	binary := flag.String("b", "echo helloWorld", "Path to Unix command/binary that have STDOUT")
+	port := flag.Int("p", 8080, "HTTP port to listen on")
 	flag.Parse()
 
 	if *binary == "" {
-		fmt.Println("Path to binary not specified.")
+		fmt.Println("Path to Unix command/binary not specified.")
 		return
 	}
 
@@ -25,7 +25,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var argString string
 		if r.Body != nil {
-			data, err := ioutil.ReadAll(r.Body)
+			data, err := io.ReadAll(r.Body)
 			if err != nil {
 				l.Print(err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
