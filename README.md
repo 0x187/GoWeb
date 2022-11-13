@@ -4,7 +4,7 @@ Make Any Shell Command as a Web API with Golang
 Clients invoke the web API by sending HTTP GET and POST requests. Clients can also send in additional flags and arguments to be passed into the command/script wrapped within the web API. Result of the command/script execution is sent back to the client as a plain text payload.
 
 ## Building
-Just build it as release :)
+**Just build it as a release :)**
 ```bash
 go build -ldflags '-s -w' -o bin/gexec src/*
 ```
