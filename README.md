@@ -16,9 +16,10 @@ bin/gexec --help
     -b string
             Path to Unix command/binary that have STDOUT (default "echo helloWorld")
     -p int
-        	HTTP port to listen on (default 8080)
+            HTTP port to listen on (default 8080)
 ```
 ## Running 
+(**If no command/port passed, Will run default command/port**)
 
 As an example, assume you need to expose the "timedatectl" command as a web API. You can simply run the tool as follows:
 
