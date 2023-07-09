@@ -1,0 +1,22 @@
+# Compiled binary
+bin/
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test output
+*.test
+
+# Dependency directories
+vendor/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Log files
+*.log

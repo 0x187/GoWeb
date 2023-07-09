@@ -12,22 +12,29 @@ import (
 )
 
 func main() {
-	binary := flag.String("b", "echo helloWorld", "Path to Unix command/binary that have STDOUT")
+	binary := flag.String("b", "echo HelloWorld", "Path to the Unix command/binary that outputs to STDOUT")
 	port := flag.Int("p", 8080, "HTTP port to listen on")
+	help := flag.Bool("h", false, "Show command-line help")
 	flag.Parse()
 
-	if *binary == "" {
-		fmt.Println("Path to Unix command/binary not specified.")
+	if *help {
+		flag.Usage()
 		return
 	}
 
-	l := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	if *binary == "" {
+		log.Println("Path to Unix command/binary not specified.")
+		return
+	}
+
+	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		var argString string
 		if r.Body != nil {
+			defer r.Body.Close()
 			data, err := io.ReadAll(r.Body)
 			if err != nil {
-				l.Print(err)
+				logger.Print(err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -35,19 +42,31 @@ func main() {
 		}
 
 		fields := strings.Fields(*binary)
-		args := append(fields[1:], strings.Fields(argString)...)
-		l.Printf("Command: [%s %s]", fields[0], strings.Join(args, " "))
+		args := append(fields, strings.Fields(argString)...)
+		logger.Printf("Command: [%s %s]", args[0], strings.Join(args[1:], " "))
 
-		output, err := exec.Command(fields[0], args...).Output()
+		output, err := exec.Command(args[0], args[1:]...).Output()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write(output)
+		_, err = w.Write(output)
+		if err != nil {
+			logger.Print(err)
+		}
 	})
 
-	l.Printf("Listening on port %d...", *port)
-	l.Printf("Exposed binary: %s", *binary)
-	http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *port), nil)
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n", os.Args[0])
+		fmt.Fprintln(os.Stderr, "Options:")
+		flag.PrintDefaults()
+	}
+
+	logger.Printf("Listening on port %d...", *port)
+	logger.Printf("Exposed binary: %s", *binary)
+	err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *port), nil)
+	if err != nil {
+		logger.Fatal(err)
+	}
 }
